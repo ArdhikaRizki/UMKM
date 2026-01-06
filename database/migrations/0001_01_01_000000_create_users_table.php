@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->string('name'); // Nama lengkap (misal: Budi Kasir)
+            $table->string('email')->unique(); // Kita pake email buat login (standar Laravel)
             $table->string('password');
+            $table->string('role')->default('staff'); // <--- INI PENTING (admin / staff)
             $table->rememberToken();
             $table->timestamps();
         });
