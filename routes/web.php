@@ -25,6 +25,10 @@ Route::middleware(['auth'])->group(function () {
         session()->regenerateToken();
         return redirect('/');
     })->name('logout');
+
+    // Route::get('/cart', function(){
+        
+    // })
 });
 
 

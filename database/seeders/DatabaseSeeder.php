@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -30,6 +31,11 @@ class DatabaseSeeder extends Seeder
         ]);
         
         //to make seeding instant with 10 data (if u wanna add more data just change fucntion factory() to whatever you want to add) #kiw
+        
+        Product::factory(20)->create();
+
+        // to run seeder hit this on konsol 
+        // php artisan db:seed
         
         // User::factory(10)->create();
         // User::factory()->create([
