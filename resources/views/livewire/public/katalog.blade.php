@@ -86,7 +86,9 @@
                                 <span class="text-xs text-gray-400 line-through">Rp {{ number_format($product->price * 1.1, 0, ',', '.') }}</span>
                                 <span class="text-lg font-bold text-gray-900">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
                             </div>
-                            <button class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition shadow-sm">
+                            <button wire:click = "addToCart({{$product->id }})"
+                            wire:loading.attr="disabled" 
+                            class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition shadow-sm">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                             </button>
                         </div>
@@ -105,8 +107,124 @@
             @endforelse
         </div>
         
+        <div class="fixed bottom-6 right-6 z-50">
+    <a href="#" class="relative bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition flex items-center justify-center">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+
+        @if($this->totalCart > 0)
+            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-bounce">
+                {{ $this->totalCart }}
+            </span>
+        @endif
+
+    </a>
+</div>
+        
         <div class="mt-10 text-center text-gray-400 text-sm">
             &copy; {{ date('Y') }} WarungKita Digital. Dibuat dengan 💙 dan Laravel Livewire.
         </div>
     </div>
+
+    <div class="fixed bottom-6 right-6 z-40">
+        <button wire:click="toggleCart" class="relative bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            @if($this->totalCart > 0)
+                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-bounce">
+                    {{ $this->totalCart }}
+                </span>
+            @endif
+        </button>
+    </div>
+
+@if($showCart)
+    <div class="fixed inset-0 bg-black bg-opacity-50 z-[60] transition-opacity" 
+         wire:click="toggleCart"></div>
+
+    <div class="fixed inset-y-0 right-0 w-full md:w-96 bg-white z-[70] shadow-2xl transform transition-transform duration-300 flex flex-col">
+        
+        <div class="p-5 border-b flex justify-between items-center bg-gray-50 shadow-sm z-10">
+            <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                Keranjang Belanja
+            </h2>
+            
+            <button wire:click="toggleCart" class="p-2 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-5 space-y-4 pb-24">
+            @forelse(session('cart', []) as $id => $details)
+                <div class="flex gap-4 border-b border-gray-100 pb-4 last:border-0 animate-fadeIn">
+                    <div class="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200">
+                        <img src="{{ $details['image'] }}" class="w-full h-full object-cover">
+                    </div>
+
+                    <div class="flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-gray-800 line-clamp-2 text-base">{{ $details['name'] }}</h3>
+                            <p class="text-blue-600 font-semibold text-sm">Rp {{ number_format($details['price'], 0, ',', '.') }}</p>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mt-2">
+                            <div class="flex items-center bg-gray-100 rounded-full px-1 py-1">
+                                <button wire:click="decreaseQuantity({{ $id }})" class="w-8 h-8 rounded-full bg-white text-gray-600 shadow-sm hover:bg-gray-200 flex items-center justify-center font-bold text-lg active:scale-90 transition">-</button>
+                                <span class="text-gray-800 font-bold w-8 text-center text-sm">{{ $details['quantity'] }}</span>
+                                <button wire:click="addQuantity({{ $id }})" class="w-8 h-8 rounded-full bg-blue-600 text-white shadow-sm hover:bg-blue-700 flex items-center justify-center font-bold text-lg active:scale-90 transition">+</button>
+                            </div>
+                            
+                            <button wire:click="removeFromCart({{ $id }})" class="text-red-500 hover:bg-red-50 p-2 rounded-lg transition">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="h-full flex flex-col items-center justify-center text-gray-400 space-y-4">
+                    <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center">
+                        <svg class="w-12 h-12 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    </div>
+                    <p class="font-medium">Keranjang masih kosong, Bos!</p>
+                    <button wire:click="toggleCart" class="text-blue-600 font-bold hover:underline">Mulai Belanja</button>
+                </div>
+            @endforelse
+        </div>
+
+        <div class="p-5 border-t bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-20">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-gray-600 font-medium">Total Pembayaran:</span>
+                <span class="text-2xl font-extrabold text-blue-700">Rp {{ number_format($this->totalPrice, 0, ',', '.') }}</span>
+            </div>
+            
+            @if($this->totalCart > 0)
+                <button wire:click="checkout" 
+                    wire:loading.attr="disabled"
+                    class="w-full py-4 bg-green-500 text-white rounded-xl font-bold text-lg hover:bg-green-600 shadow-lg active:scale-[0.98] transition flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                
+                <svg wire:loading.remove wire:target="checkout" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                
+                <svg wire:loading wire:target="checkout" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+
+                <span wire:loading.remove wire:target="checkout">Pesan Sekarang (WA)</span>
+                <span wire:loading wire:target="checkout">Membuka WhatsApp...</span>
+                </button>
+            @else
+                 <button disabled class="w-full py-4 bg-gray-200 text-gray-400 rounded-xl font-bold cursor-not-allowed">
+                    Pilih Barang Dulu
+                </button>
+            @endif
+        </div>
+    </div>
+@endif
+    </div> 
+
+
 </div>
