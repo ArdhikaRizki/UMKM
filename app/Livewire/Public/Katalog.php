@@ -11,6 +11,21 @@ class Katalog extends Component
 
     public $search = '';
     public $showCart = false;
+    public $selectedCategory = null;
+    public $isOpenDetail = false;
+    public $productDetail = null;
+
+
+
+    public function openDetail($id){
+        $this->productDetail = Product::find($id);
+        $this->isOpenDetail = true;
+    } 
+
+    public function closeDetail(){
+        $this->isOpenDetail = false;
+        $this->productDetail= null;
+    }
 
 
     public function toggleCart(){
@@ -82,6 +97,11 @@ class Katalog extends Component
         return redirect()->to($waLink);
     }
 
+    public function selectCategory($kategori){
+
+        $this->selectedCategory = ($this->selectedCategory === $kategori) ? null : $kategori;
+    }
+
     public function addToCart($productID){
         $product = Product::find($productID);
 
@@ -123,7 +143,11 @@ class Katalog extends Component
         $products = Product::query()->when($this->search, function($query){
             $query->where('name', 'like', '%'. $this->search .'%');
 
-        })->latest()->get();
+        })
+        ->when($this->selectedCategory, function($query){
+            $query->where('category', '=', $this->selectedCategory);
+        })
+        ->latest()->get();
 
         return view('livewire.public.katalog', [
             'products' => $products 
