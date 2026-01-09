@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('customer_name')->nullable(); // Buat catet kasbon/nama pembeli
             $table->integer('total_amount');
             $table->integer('pay_amount');
+            $table->integer('change');
             $table->string('status')->default('done');
             $table->timestamps();
         });
