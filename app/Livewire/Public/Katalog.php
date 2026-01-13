@@ -37,6 +37,7 @@ class Katalog extends Component
         if(isset($cart[$id])){
             $cart[$id]['quantity']++;
             session()->put('cart', $cart);
+            session()->put('cart_timestamp', now()->timestamp);
             unset($this->totalCart);
         }
     }
@@ -51,6 +52,7 @@ class Katalog extends Component
                 unset($cart[$id]);
             }
                 session()->put('cart', $cart);
+                session()->put('cart_timestamp', now()->timestamp);
                 unset($this->totalCart);
         }
 
@@ -61,6 +63,7 @@ class Katalog extends Component
         if(isset($cart[$id])){
             unset($cart[$id]);
             session()->put('cart', $cart);
+            session()->put('cart_timestamp', now()->timestamp);
             unset($this->totalCart);
         }
     }
@@ -69,7 +72,7 @@ class Katalog extends Component
         $cart = session()->get('cart', []);
         $total = 0;
         foreach ($cart as $item) {
-            $total =+ $item['quantity'] * $item['price'];
+            $total += $item['quantity'] * $item['price'];
         }
         return $total;
     }
@@ -93,6 +96,9 @@ class Katalog extends Component
 
         $encodedMessage = urlencode($message);
         $waLink = "https://wa.me/{$adminPhone}?text={$encodedMessage}";
+
+        // Clear cart setelah checkout
+        $this->clearCart();
 
         return redirect()->to($waLink);
     }
@@ -124,12 +130,27 @@ class Katalog extends Component
         }
 
         session()->put('cart', $cart);
+        session()->put('cart_timestamp', now()->timestamp);
 
         // dd(session()->get('cart'));
         unset($this->totalCart);
+    }
 
+    public function clearCart(){
+        session()->forget('cart');
+        session()->forget('cart_timestamp');
+        unset($this->totalCart);
+        $this->showCart = false;
+    }
 
-
+    public function checkCartExpiry(){
+        $timestamp = session()->get('cart_timestamp');
+        if($timestamp){
+            $minutesElapsed = (now()->timestamp - $timestamp) / 60;
+            if($minutesElapsed >= 10){
+                $this->clearCart();
+            }
+        }
     }
     #[Computed]
     public function totalCart()
@@ -140,6 +161,8 @@ class Katalog extends Component
 
     public function render()
      {
+        $this->checkCartExpiry();
+
         $products = Product::query()->when($this->search, function($query){
             $query->where('name', 'like', '%'. $this->search .'%');
 

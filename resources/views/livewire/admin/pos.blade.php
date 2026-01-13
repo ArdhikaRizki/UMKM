@@ -106,8 +106,8 @@
 
             <div class="flex justify-between items-center mb-6 text-sm">
                 <span class="text-gray-500">Kembalian</span>
-                <span class="font-bold {{ $this->Change > 0 ? 'text-green-600' : 'text-gray-400' }}">
-                    Rp {{ number_format($this->Change, 0, ',', '.') }}
+                <span class="font-bold {{ $this->change > 0 ? 'text-green-600' : 'text-gray-400' }}">
+                    Rp {{ number_format($this->change, 0, ',', '.') }}
                 </span>
             </div>
 

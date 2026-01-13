@@ -25,9 +25,9 @@
                 </span>
             </a>
 
-            <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+            <div class="flex md:order-2 space-x-3">
                 @auth
-                    <a href="{{ route('dashboard') }}" class="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-4 py-2 text-center mr-2">
+                    <a href="{{ route('dashboard') }}" class="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-4 py-2 text-center">
                         Kasir (POS)
                     </a>
                     <a href="{{ route('logout') }}" class="text-red-600 hover:text-red-800 font-medium text-sm px-4 py-2 border border-red-200 rounded-lg hover:bg-red-50">
@@ -39,6 +39,7 @@
                     </a>
                 @endauth
             </div>
+
         </div>
     </nav>
 

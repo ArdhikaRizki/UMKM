@@ -289,4 +289,18 @@
         </div>
     </div>
     @endif
+
+    @script
+    <script>
+        // Hapus cart saat tab/browser ditutup
+        window.addEventListener('beforeunload', function(e) {
+            $wire.clearCart();
+        });
+
+        // Auto-refresh untuk cek expiry setiap 1 menit
+        setInterval(function() {
+            $wire.checkCartExpiry();
+        }, 60000); // 60000ms = 1 menit
+    </script>
+    @endscript
 </div>

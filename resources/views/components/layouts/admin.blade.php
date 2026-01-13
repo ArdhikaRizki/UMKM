@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - WarungKita</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
@@ -53,14 +54,12 @@
                     <span class="font-medium">Laporan</span>
                 </a>
 
-            </nav>
-
-            <div class="p-4 border-t border-slate-800">
-                <button class="w-full flex items-center gap-2 text-slate-400 hover:text-red-400 transition text-sm">
+                <a href="{{ route('logout') }}" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-red-600 hover:text-white rounded-xl transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                    Logout
-                </button>
-            </div>
+                    <span class="font-medium">Logout</span>
+                </a>
+
+            </nav>
         </aside>
 
         <main class="flex-1 flex flex-col min-w-0 overflow-hidden h-screen">
@@ -78,8 +77,8 @@
                 </div>
                 
                 <div class="flex items-center gap-3">
-                    <span class="hidden md:inline text-sm font-medium text-gray-600">Halo, Admin! </span>
-                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-blue-200">A</div>
+                    <span class="hidden md:inline text-sm font-medium text-gray-600">Halo, {{ auth()->user()->name }}! </span>
+                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-blue-200">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
                 </div>
             </header>
 
