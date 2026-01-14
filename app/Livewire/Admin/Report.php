@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use Livewire\Component;
 use App\Models\Transaction;
+use App\Models\StockPurchase;
 use Livewire\Attributes\Layout;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod; // Buat bikin urutan tanggal
@@ -16,6 +17,7 @@ class Report extends Component
     public $search = ''; // Search by invoice
     public $hourFilter = ''; // Filter by hour
     public $selectedTransaction = null;
+    public $showPurchaseReport = false; // Toggle view pembelian
 
     public function mount()
     {
@@ -33,6 +35,7 @@ class Report extends Component
     {
         $this->selectedTransaction = null;
     }
+    
     public function updatedMonth() {
         $this->updateChart();
     }
@@ -43,7 +46,6 @@ class Report extends Component
 
     // Fungsi bantu buat ngirim event
     public function updateChart() {
-        // Kita hitung ulang chart data disini (copas logic dari render)
         $bulan = (int) $this->month;
         $tahun = (int) $this->year;
         
@@ -55,22 +57,44 @@ class Report extends Component
                         ->whereYear('created_at', $tahun)
                         ->get();
 
+        $monthlyPurchases = StockPurchase::whereMonth('created_at', $bulan)
+                        ->whereYear('created_at', $tahun)
+                        ->get();
+
         $chartLabels = [];
-        $chartData = [];
+        $chartSalesData = [];
+        $chartPurchaseData = [];
+        $chartProfitData = [];
 
         foreach ($period as $dt) {
             $dateString = $dt->format('Y-m-d');
             $shortDate = $dt->format('d M');
             
-            $sum = $monthlySales->filter(function ($t) use ($dateString) {
+            $salesSum = $monthlySales->filter(function ($t) use ($dateString) {
                 return $t->created_at->format('Y-m-d') === $dateString;
             })->sum('total_amount');
 
+            $purchaseSum = $monthlyPurchases->filter(function ($p) use ($dateString) {
+                return $p->created_at->format('Y-m-d') === $dateString;
+            })->sum('total_cost');
+
             $chartLabels[] = $shortDate;
-            $chartData[] = $sum;
+            $chartSalesData[] = $salesSum;
+            $chartPurchaseData[] = $purchaseSum;
+            $chartProfitData[] = $salesSum - $purchaseSum;
         }
 
-        $this->dispatch('update-chart', labels: $chartLabels, data: $chartData);
+        $this->dispatch('update-chart', 
+            labels: $chartLabels, 
+            salesData: $chartSalesData,
+            purchaseData: $chartPurchaseData,
+            profitData: $chartProfitData
+        );
+    }
+
+    public function toggleView()
+    {
+        $this->showPurchaseReport = !$this->showPurchaseReport;
     }
 
     #[Layout('components.layouts.admin')]
@@ -92,41 +116,70 @@ class Report extends Component
                         ->get();
 
         // 2. LOGIC GRAFIK BULANAN
-        $monthlySales = Transaction::whereMonth('created_at', $bulan) // Pake variabel $bulan yg udah di-cast
+        $monthlySales = Transaction::whereMonth('created_at', $bulan)
+                        ->whereYear('created_at', $tahun)
+                        ->get();
+
+        $monthlyPurchases = StockPurchase::whereMonth('created_at', $bulan)
                         ->whereYear('created_at', $tahun)
                         ->get();
 
         $grandTotal = $monthlySales->sum('total_amount');
         $totalBon = $monthlySales->count();
+        $totalPurchase = $monthlyPurchases->sum('total_cost');
+        $profit = $grandTotal - $totalPurchase;
 
         // 3. Siapkan Data Grafik
-        //  FIX 2: Di sini biang kerok errornya tadi, sekarang pake $bulan (int)
         $start = Carbon::createFromDate($tahun, $bulan, 1); 
         $end = $start->copy()->endOfMonth();
         
         $period = CarbonPeriod::create($start, $end);
         
         $chartLabels = [];
-        $chartData = [];
+        $chartSalesData = [];
+        $chartPurchaseData = [];
+        $chartProfitData = [];
 
         foreach ($period as $dt) {
             $dateString = $dt->format('Y-m-d');
             $shortDate = $dt->format('d M');
             
-            $sum = $monthlySales->filter(function ($t) use ($dateString) {
+            $salesSum = $monthlySales->filter(function ($t) use ($dateString) {
                 return $t->created_at->format('Y-m-d') === $dateString;
             })->sum('total_amount');
 
+            $purchaseSum = $monthlyPurchases->filter(function ($p) use ($dateString) {
+                return $p->created_at->format('Y-m-d') === $dateString;
+            })->sum('total_cost');
+
             $chartLabels[] = $shortDate;
-            $chartData[] = $sum;
+            $chartSalesData[] = $salesSum;
+            $chartPurchaseData[] = $purchaseSum;
+            $chartProfitData[] = $salesSum - $purchaseSum;
         }
+
+        // 4. Laporan Pembelian Stok
+        $stockPurchases = StockPurchase::with(['product' => function($query) {
+                            $query->withTrashed(); // Include soft deleted products
+                        }, 'user'])
+                        ->whereDate('created_at', $this->date)
+                        ->latest()
+                        ->get();
+        
+        $totalPurchaseCost = $stockPurchases->sum('total_cost');
 
         return view('livewire.admin.report', [
             'transactions' => $dailyTransactions,
             'grandTotal' => $grandTotal, 
             'totalBon' => $totalBon,
+            'totalPurchase' => $totalPurchase,
+            'profit' => $profit,
             'chartLabels' => $chartLabels,
-            'chartData' => $chartData
+            'chartSalesData' => $chartSalesData,
+            'chartPurchaseData' => $chartPurchaseData,
+            'chartProfitData' => $chartProfitData,
+            'stockPurchases' => $stockPurchases,
+            'totalPurchaseCost' => $totalPurchaseCost
         ]);
     }
 }

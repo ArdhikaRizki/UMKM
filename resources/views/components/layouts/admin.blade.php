@@ -43,7 +43,7 @@
                     <span class="font-bold">Kasir (POS)</span>
                 </a>
 
-                <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl transition">
+                <a href="{{route('productIndex')}}" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                     <span class="font-medium">Data Produk + AI</span>
                 </a>
@@ -71,7 +71,7 @@
                     </button>
                     
                     <h2 class="text-lg font-bold text-gray-700">
-                        {{ request()->routeIs('dashboard') ? 'Mesin Kasir 🛒' : 'Dashboard Admin' }}
+                        {{ request()->routeIs('dashboard') ? 'Mesin Kasir' : 'Dashboard Admin' }}
                     </h2>
                 </div>
                 

@@ -7,6 +7,7 @@ use App\Livewire\Auth\Login;
 // use App\Livewire\Auth\Logout;
 use App\Livewire\Public\Katalog;
 use App\Livewire\Admin\Report;
+use App\Livewire\Product\ProductIndex;
 
 // each you change the route in web.php dont forget run this
 // php artisan route:clear 
@@ -42,4 +43,5 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/report', Report::class)->name('report');
+    Route::get('/productIndex', ProductIndex::class)->name('productIndex');
 });

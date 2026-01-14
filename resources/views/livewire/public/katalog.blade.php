@@ -1,9 +1,17 @@
 <div class="min-h-screen bg-gray-50">
     
-        <div class="relative bg-blue-700 pb-10 pt-10 rounded-b-[50px] shadow-xl overflow-hidden">
+        <div class="relative pb-10 pt-10 rounded-b-[50px] shadow-xl overflow-hidden">
         
-        <div class="absolute top-0 left-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -translate-x-10 -translate-y-10"></div>
-        <div class="absolute bottom-0 right-0 w-96 h-96 bg-blue-400 opacity-20 rounded-full blur-3xl translate-x-20 translate-y-20"></div>
+        <!-- Background Image with Blur -->
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=1200" 
+                 alt="Warung Background" 
+                 class="w-full h-full object-cover blur-sm scale-110 brightness-[0.35]">
+            <div class="absolute inset-0 bg-gradient-to-br from-blue-900/70 via-blue-800/60 to-indigo-900/70"></div>
+        </div>
+        
+        <div class="absolute top-0 left-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -translate-x-10 -translate-y-10 z-[1]"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-blue-400 opacity-20 rounded-full blur-3xl translate-x-20 translate-y-20 z-[1]"></div>
 
         <div class="container mx-auto px-4 relative z-10 text-center">
             
@@ -40,25 +48,29 @@
                     <button wire:click="selectCategory('Promo')" 
                             class="px-5 py-2.5 rounded-full font-bold shadow-lg transition transform hover:-translate-y-1 text-sm whitespace-nowrap flex items-center gap-2
                             {{ $selectedCategory == 'Promo' ? 'bg-yellow-400 text-yellow-900 ring-2 ring-white' : 'bg-white/10 text-white hover:bg-white/20 backdrop-blur-md border border-white/20' }}"> 
-                        🔥 <span class="{{ $selectedCategory == 'Promo' ? '' : 'text-blue-50' }}">Promo</span>
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" /></svg>
+                        <span class="{{ $selectedCategory == 'Promo' ? '' : 'text-blue-50' }}">Promo</span>
                     </button>
             
                     <button wire:click="selectCategory('Makanan')" 
                             class="px-5 py-2.5 rounded-full font-medium shadow-lg transition transform hover:-translate-y-1 text-sm whitespace-nowrap
                             {{ $selectedCategory == 'Makanan' ? 'bg-white text-blue-700 font-bold' : 'bg-blue-600/50 text-blue-50 hover:bg-blue-600 border border-blue-500' }}"> 
-                        🍜 Makanan
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                        Makanan
                     </button>
             
                     <button wire:click="selectCategory('Minuman')" 
                             class="px-5 py-2.5 rounded-full font-medium shadow-lg transition transform hover:-translate-y-1 text-sm whitespace-nowrap
                             {{ $selectedCategory == 'Minuman' ? 'bg-white text-blue-700 font-bold' : 'bg-blue-600/50 text-blue-50 hover:bg-blue-600 border border-blue-500' }}"> 
-                        🥤 Minuman
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
+                        Minuman
                     </button>
             
                     <button wire:click="selectCategory('Sabun')" 
                             class="px-5 py-2.5 rounded-full font-medium shadow-lg transition transform hover:-translate-y-1 text-sm whitespace-nowrap
                             {{ $selectedCategory == 'Sabun' ? 'bg-white text-blue-700 font-bold' : 'bg-blue-600/50 text-blue-50 hover:bg-blue-600 border border-blue-500' }}"> 
-                        🧼 Sabun
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                        Sabun
                     </button>
 
                      @if($selectedCategory)
@@ -87,13 +99,15 @@
                     <div class="h-40 md:h-48 bg-gray-100 overflow-hidden relative cursor-pointer" 
                          wire:click="openDetail({{ $product->id }})">
                          @if($product->image)
-                            <img src="{{ $product->image }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                            <img src="{{ str_starts_with($product->image, 'http') ? $product->image : Storage::url($product->image) }}" 
+                                 alt="{{ $product->name }}" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
                         @else
                             <div class="w-full h-full flex items-center justify-center text-gray-300 bg-gray-50">
-                                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                <svg class="w-16 h-16 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                             </div>
                         @endif
-                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-5 transition duration-300"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/5 transition duration-300"></div>
                     </div>
 
                     <div class="p-4 flex flex-col flex-1">
