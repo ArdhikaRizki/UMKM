@@ -47,6 +47,7 @@ class Pos extends Component
             $this->cart[$id] = [
                 'id' => $product->id,
                 'name' => $product->name,
+                'price' => $product->price,
                 'image' => $product->image,
                 'quantity' => 1
             ];
@@ -101,6 +102,7 @@ class Pos extends Component
                 TransactionDetail::create([
                     'transaction_id' => $transaction->id,
                     'product_id' => $item['id'],
+                    'price' => $item['price'],
                     'qty' => $item['quantity'],
                     'subtotal' => $item['price'] * $item['quantity']
                 ]);
