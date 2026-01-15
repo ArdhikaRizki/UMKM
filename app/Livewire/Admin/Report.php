@@ -4,7 +4,9 @@ namespace App\Livewire\Admin;
 
 use Livewire\Component;
 use App\Models\Transaction;
+use App\Models\TransactionDetail;
 use App\Models\StockPurchase;
+use App\Models\Product;
 use Livewire\Attributes\Layout;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod; // Buat bikin urutan tanggal
@@ -168,6 +170,45 @@ class Report extends Component
         
         $totalPurchaseCost = $stockPurchases->sum('total_cost');
 
+        // 5. Laporan Per Produk (Gabungan Penjualan & Pembelian)
+        $productReport = Product::withTrashed()
+            ->with(['transactionDetails' => function($query) use ($bulan, $tahun) {
+                $query->whereHas('transaction', function($q) use ($bulan, $tahun) {
+                    $q->whereMonth('created_at', $bulan)
+                      ->whereYear('created_at', $tahun);
+                });
+            }, 'stockPurchases' => function($query) use ($bulan, $tahun) {
+                $query->whereMonth('created_at', $bulan)
+                      ->whereYear('created_at', $tahun);
+            }])
+            ->get()
+            ->map(function($product) {
+                $totalSold = $product->transactionDetails->sum('qty');
+                $totalRevenue = $product->transactionDetails->sum('subtotal');
+                $totalPurchased = $product->stockPurchases->sum('quantity');
+                $totalCost = $product->stockPurchases->sum('total_cost');
+                $productProfit = $totalRevenue - $totalCost;
+                
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'category' => $product->category,
+                    'is_deleted' => $product->trashed(),
+                    'total_sold' => $totalSold,
+                    'total_revenue' => $totalRevenue,
+                    'total_purchased' => $totalPurchased,
+                    'total_cost' => $totalCost,
+                    'profit' => $productProfit,
+                    'profit_margin' => $totalRevenue > 0 ? ($productProfit / $totalRevenue) * 100 : 0,
+                ];
+            })
+            ->filter(function($item) {
+                // Hanya tampilkan produk yang ada transaksi
+                return $item['total_sold'] > 0 || $item['total_purchased'] > 0;
+            })
+            ->sortByDesc('profit')
+            ->values();
+
         return view('livewire.admin.report', [
             'transactions' => $dailyTransactions,
             'grandTotal' => $grandTotal, 
@@ -179,7 +220,8 @@ class Report extends Component
             'chartPurchaseData' => $chartPurchaseData,
             'chartProfitData' => $chartProfitData,
             'stockPurchases' => $stockPurchases,
-            'totalPurchaseCost' => $totalPurchaseCost
+            'totalPurchaseCost' => $totalPurchaseCost,
+            'productReport' => $productReport
         ]);
     }
 }

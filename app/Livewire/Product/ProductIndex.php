@@ -7,6 +7,7 @@ use Livewire\Attributes\On;
 use Livewire\Attributes\Layout;
 use App\Models\Product;
 use App\Models\StockPurchase;
+use Illuminate\Support\Facades\Auth;
 
 class ProductIndex extends Component
 {
@@ -53,7 +54,7 @@ class ProductIndex extends Component
             'quantity' => $this->stockQuantity,
             'purchase_price' => $this->purchasePrice,
             'total_cost' => $totalCost,
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'notes' => $this->notes,
         ]);
 

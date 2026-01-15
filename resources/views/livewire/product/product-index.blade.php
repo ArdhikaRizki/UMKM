@@ -39,6 +39,7 @@
             <thead>
                 <tr class="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
                     <th class="p-3 text-left">No</th>
+                    <th class="p-3 text-left">Gambar</th>
                     <th class="p-3 text-left">Nama Produk</th>
                     <th class="p-3 text-left">Kategori</th>
                     <th class="p-3 text-right">Harga</th>
@@ -50,6 +51,17 @@
                 @forelse($products as $index => $p)
                 <tr class="border-b hover:bg-blue-50 transition">
                     <td class="p-3 text-gray-600 font-semibold">{{ $index + 1 }}</td>
+                    <td class="p-3">
+                        @if($p->image)
+                            <img src="{{ str_starts_with($p->image, 'http') ? $p->image : asset('storage/' . $p->image) }}" 
+                                alt="{{ $p->name }}" 
+                                class="w-16 h-16 object-cover rounded-lg border-2 border-gray-200">
+                        @else
+                            <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            </div>
+                        @endif
+                    </td>
                     <td class="p-3 font-medium">{{ $p->name }}</td>
                     <td class="p-3">
                         <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full font-semibold">{{ $p->category }}</span>
@@ -119,6 +131,15 @@
             </div>
             
             <div class="p-4 space-y-3">
+                <!-- Gambar Produk -->
+                @if($p->image)
+                <div class="flex justify-center">
+                    <img src="{{ str_starts_with($p->image, 'http') ? $p->image : asset('storage/' . $p->image) }}" 
+                        alt="{{ $p->name }}" 
+                        class="w-32 h-32 object-cover rounded-lg border-2 border-gray-200">
+                </div>
+                @endif
+                
                 <div class="flex justify-between items-center">
                     <span class="text-gray-600 text-sm">Harga:</span>
                     <span class="font-bold text-lg text-gray-800">Rp {{ number_format($p->price, 0, ',', '.') }}</span>

@@ -8,8 +8,14 @@ class TransactionDetail extends Model
 {
     //
     protected $guarded = [];
+    
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class);
     }
 }

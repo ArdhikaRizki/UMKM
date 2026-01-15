@@ -17,4 +17,14 @@ class Product extends Model
         'stock',
         'image',
     ];
+
+    public function transactionDetails()
+    {
+        return $this->hasMany(TransactionDetail::class);
+    }
+
+    public function stockPurchases()
+    {
+        return $this->hasMany(StockPurchase::class);
+    }
 }

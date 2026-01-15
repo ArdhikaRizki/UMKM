@@ -223,6 +223,81 @@
         <div id="chartPenjualan" class="w-full h-80 bg-white rounded-xl border border-gray-100 p-4"></div>
     </div>
 
+    <!-- SECTION 3: LAPORAN PER PRODUK -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="p-4 border-b border-gray-100 bg-gradient-to-r from-purple-500 to-indigo-600">
+            <h3 class="font-bold text-white flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                Laporan Per Produk
+            </h3>
+            <p class="text-purple-100 text-sm mt-1">Detail penjualan & pembelian setiap produk bulan ini</p>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-gray-200">
+                        <th class="p-3 text-left text-xs font-semibold text-gray-600">Produk</th>
+                        <th class="p-3 text-center text-xs font-semibold text-gray-600">Terjual</th>
+                        <th class="p-3 text-right text-xs font-semibold text-gray-600">Pendapatan</th>
+                        <th class="p-3 text-center text-xs font-semibold text-gray-600">Dibeli</th>
+                        <th class="p-3 text-right text-xs font-semibold text-gray-600">Modal</th>
+                        <th class="p-3 text-right text-xs font-semibold text-gray-600">Profit</th>
+                        <th class="p-3 text-center text-xs font-semibold text-gray-600">Margin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($productReport as $item)
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-3">
+                            <div class="flex items-center gap-2">
+                                <span class="font-semibold text-gray-800">{{ $item['name'] }}</span>
+                                @if($item['is_deleted'])
+                                    <span class="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded-full font-semibold">Deleted</span>
+                                @endif
+                            </div>
+                            <span class="text-xs text-gray-500">{{ $item['category'] }}</span>
+                        </td>
+                        <td class="p-3 text-center">
+                            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-bold">
+                                {{ $item['total_sold'] }} unit
+                            </span>
+                        </td>
+                        <td class="p-3 text-right">
+                            <span class="font-bold text-green-600">Rp {{ number_format($item['total_revenue'], 0, ',', '.') }}</span>
+                        </td>
+                        <td class="p-3 text-center">
+                            <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-bold">
+                                {{ $item['total_purchased'] }} unit
+                            </span>
+                        </td>
+                        <td class="p-3 text-right">
+                            <span class="font-bold text-red-600">Rp {{ number_format($item['total_cost'], 0, ',', '.') }}</span>
+                        </td>
+                        <td class="p-3 text-right">
+                            <span class="font-bold text-lg {{ $item['profit'] >= 0 ? 'text-blue-600' : 'text-red-600' }}">
+                                Rp {{ number_format($item['profit'], 0, ',', '.') }}
+                            </span>
+                        </td>
+                        <td class="p-3 text-center">
+                            <span class="px-3 py-1 rounded-full text-sm font-bold {{ $item['profit_margin'] >= 30 ? 'bg-green-100 text-green-700' : ($item['profit_margin'] >= 10 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700') }}">
+                                {{ number_format($item['profit_margin'], 1) }}%
+                            </span>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7" class="p-8 text-center text-gray-500">
+                            <svg class="w-16 h-16 mx-auto text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" /></svg>
+                            <p class="font-semibold">Belum ada data transaksi produk bulan ini</p>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     @if($selectedTransaction)
        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
             <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">

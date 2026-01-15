@@ -8,6 +8,7 @@ use App\Models\Transaction;
 use App\Models\TransactionDetail;
 use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class Pos extends Component
 {
@@ -41,6 +42,13 @@ class Pos extends Component
         if(!$product)
             return;
 
+        // Cek stock saat add to cart
+        $currentQtyInCart = isset($this->cart[$id]) ? $this->cart[$id]['quantity'] : 0;
+        
+        if($currentQtyInCart >= $product->stock){
+            session()->flash('error', "Stock {$product->name} tidak cukup! Tersisa: {$product->stock}");
+            return;
+        }
         if(isset($this->cart[$id])){
             $this->cart[$id]['quantity']++;  
         } else{
@@ -49,7 +57,8 @@ class Pos extends Component
                 'name' => $product->name,
                 'price' => $product->price,
                 'image' => $product->image,
-                'quantity' => 1
+                'quantity' => 1,
+                'stock' => $product->stock // Simpan stock info
             ];
         }
 
@@ -67,6 +76,13 @@ class Pos extends Component
     }
     public function increaseItem($id){
         if(isset($this->cart[$id])){
+            $product = Product::find($id);
+            
+            // Cek stock sebelum tambah quantity
+            if($this->cart[$id]['quantity'] >= $product->stock){
+                session()->flash('error', "Stock {$product->name} tidak cukup! Maksimal: {$product->stock}");
+                return;
+            }
 
             $this->cart[$id]['quantity']++;
         }
@@ -82,16 +98,15 @@ class Pos extends Component
         if(empty($this->cart))
             return ;
 
-
         if($this->pay < $this->total){
-            session()->flash('error', 'uang kurang !!');
+            session()->flash('error', 'Uang kurang!');
             return;
         }
 
         DB::transaction(function () {
             $transaction = Transaction::create([
                 'invoice_no' => 'INV-'. time(),
-                'user_id' => auth()->user()->id,
+                'user_id' => Auth::id(),
                 'customer_name' => 'umum',
                 'total_amount' => $this->total,
                 'pay_amount' => $this->pay,
@@ -106,6 +121,10 @@ class Pos extends Component
                     'qty' => $item['quantity'],
                     'subtotal' => $item['price'] * $item['quantity']
                 ]);
+                
+                // Kurangi stock produk
+                $product = Product::find($item['id']);
+                $product->decrement('stock', $item['quantity']);
             }
         });
         $this->cart = [];
